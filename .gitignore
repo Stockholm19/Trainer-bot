@@ -1,0 +1,26 @@
+# Папка со сборкой и зависимостями
+.build/
+
+# Файлы Swift Package Manager
+.swiftpm/
+
+
+# Файлы Xcode (если не нужен .xcodeproj)
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+
+# Файлы операционной системы и IDE
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Файлы баз данных
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+
+# Файлы с секретными данными
+.env
