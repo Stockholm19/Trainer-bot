@@ -124,8 +124,20 @@ struct QuestionsCSVLoader {
 
             let difficulty: Int
             if let idx = difficultyIdx, idx < cols.count {
-                let raw = cols[idx].trimmingCharacters(in: .whitespacesAndNewlines)
-                difficulty = Int(raw) ?? 1
+                let raw = cols[idx]
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    .lowercased()
+
+                switch raw {
+                case "1", "базовый":
+                    difficulty = 1
+                case "2", "рабочий":
+                    difficulty = 2
+                case "3", "сложный":
+                    difficulty = 3
+                default:
+                    difficulty = 1
+                }
             } else {
                 difficulty = 1
             }
