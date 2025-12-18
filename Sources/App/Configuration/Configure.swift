@@ -43,7 +43,7 @@ public func configure(_ app: Application) throws {
         Task {
             do {
                 try await app.autoMigrate()
-                // тут позже будет QuestionsSyncService
+                _ = try await QuestionsSyncService.syncAll(app: app)
             } catch {
                 app.logger.critical("Migration failed: \(error)")
             }
