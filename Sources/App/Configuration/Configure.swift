@@ -8,6 +8,7 @@
 import Vapor
 import Fluent
 import FluentPostgresDriver
+import Foundation
 
 public func configure(_ app: Application) throws {
 
@@ -38,18 +39,31 @@ public func configure(_ app: Application) throws {
     // Routes
     try routes(app)
 
+    // Инициализация телеги
+    if let token = Environment.get("BOT_TOKEN") {
+        app.telegram = TelegramClient(app: app, token: token)
+    } else {
+        app.logger.critical("BOT_TOKEN is missing")
+    }
+
     // Auto migrate + sync (НЕ в тестах)
+    // Важно: запускаем long polling ПОСЛЕ того, как схема БД и вопросы готовы.
     if app.environment != .testing {
         Task {
             do {
                 try await app.autoMigrate()
                 _ = try await QuestionsSyncService.syncAll(app: app)
+
+                // Запускаем long polling только после миграций/синка
+                if Environment.get("BOT_TOKEN") != nil {
+                    TelegramUpdatesRouter.start(app: app)
+                }
             } catch {
                 app.logger.critical("Migration failed: \(error)")
             }
         }
     }
-
+    
     app.http.server.configuration.hostname =
         Environment.get("HOST") ?? "0.0.0.0"
     app.http.server.configuration.port =

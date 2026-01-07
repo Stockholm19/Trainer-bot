@@ -11,6 +11,8 @@ FROM ubuntu:22.04
 WORKDIR /run
 RUN apt-get update && apt-get install -y ca-certificates curl tzdata && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/.build/release/Run /run/Run
+# Copy app resources (Questions CSV etc.) into runtime image
+COPY --from=build /app/Sources/App/Resources /run/Resources
 ENV HOST=0.0.0.0 PORT=8080
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 CMD curl -fsS http://127.0.0.1:${PORT}/health || exit 1
